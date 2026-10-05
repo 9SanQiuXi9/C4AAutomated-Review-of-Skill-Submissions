@@ -1,0 +1,119 @@
+---
+name: c4a-skill-evaluator
+description: C4 技能提交自动评审工具 — 输入一个包含多人 C4 技能提交的文件夹，自动扫描并按作者分组、检查 5 项必备交付物完整性、按四维度（可复用/可执行/可验证/IO 明确）质量评分，输出 Markdown/Excel/JSON 评审报告与改进建议。纯 Python 标准库实现，零第三方依赖。
+version: 1.0.0
+author: 三秋羲
+tags: [education, evaluation, automation, skill-review, C4]
+---
+
+# C4A Skill Submission Evaluator（可安装技能包）
+
+> 把一文件夹的 C4 技能提交丢进去，自动出一份完整的评审报告。
+
+## 输入 / 输出（IO 定义）
+
+- **输入**：`folder_path: string` —— 一个本地文件夹路径，内含若干人的 C4 技能提交文件。文件命名约定 `作者名_C4_文件描述.扩展名`（如 `三秋羲_C4_AI日志.md`）。支持混合格式：`.md` / `.docx` / `.pdf` / `.skill` / `.py` / `.mp4` / `.png` / `.jpg` / `.gif`。
+- **输入（可选）**：`rubric_path: string` —— 评审标准配置文件（默认 `references/rubric.json`）；`output_format: string` —— `markdown` | `excel` | `json` | `all`（默认 `markdown`）；`report_path: string` —— 报告输出目录。
+- **输出**：`report` —— 一份评审报告，含①按作者分组的完整性结论（✅ 齐全 / ⚠️ 部分缺失 / ❌ 严重缺失）与缺失项清单；②四维度逐项评级（✅ / ⚠️ / ❌）+ 评审依据 + 改进建议；③按综合得分排序的排名表（权重可配置）；④程序可解析的 JSON 结果。
+- **输出类型**：Markdown 文本 / `.xlsx` 表格 / JSON 对象，随 `output_format` 变化。
+
+## 安装
+
+```bash
+# 方式一：直接使用源码目录（本仓库即技能包）
+pip install -r requirements.txt   # 可选；核心功能零依赖，仅 Excel 输出需要 openpyxl
+
+# 方式二：安装 .skill 包（本文件），置于技能目录后由宿主加载
+```
+
+## 使用
+
+```bash
+# 基本用法：评审一个提交文件夹
+python scripts/main.py <提交文件夹路径>
+
+# 指定输出格式
+python scripts/main.py ./submissions --output excel
+python scripts/main.py ./submissions --output json
+python scripts/main.py ./submissions --output all
+
+# 自定义评审标准与输出目录
+python scripts/main.py ./submissions --rubric my_rubric.json --report-path ./reports/
+
+# 运行黄金集基准测试（12 组标注样本）
+python scripts/benchmark.py --verbose
+
+# 运行自测套件（99 项断言）
+python scripts/self_test.py
+```
+
+## 流水线
+
+```
+输入文件夹
+    │
+    ▼
+scanner.py        递归扫描 → 文件名正则匹配 → 按作者分组（含不规范命名回退）
+    │
+    ▼
+completeness.py   四级置信度匹配（文件名+扩展名 / 文件名 / 内容信号 / 未找到）
+    │             逐一核对 5 项必备交付物
+    ▼
+evaluator.py      拼接作者全部文本 → 逐维度逐检查项信号匹配（正向/负向/条件/IO 模式）
+    │
+    ▼
+reporter.py       汇总排名 → 生成 Markdown / Excel / JSON 报告
+```
+
+## 五维必备交付物检测
+
+| 交付物 | 检测信号 |
+|--------|----------|
+| Skill 说明文档 | 文件名含 `skill说明` / `skill_doc`，或内容含"输入""输出""使用场景" |
+| 可执行内容 | `.skill` / `.py` / 含 YAML frontmatter 的 `.md` / 有代码块的文档 |
+| Demo 演示 | `.mp4` / `.mov` / `.png` / `.jpg` / `.gif`，或文件名含 `demo` |
+| 教学说明 | 文件名含 `教学` / `tutorial`，或内容含"上手""常见坑""步骤" |
+| AI 日志 | 文件名含 `AI日志` / `AI_log`，或内容含"使用的 AI 工具""prompt""迭代次数" |
+
+## 四维度质量评审
+
+| 维度 | 检查内容 | 致命检查 |
+|------|----------|----------|
+| 可复用 Reusable | 安装说明、无硬编码路径、环境要求、泛化说明 | 否 |
+| 可执行 Executable | 可运行代码、`.skill` 包结构、无语法错误、YAML frontmatter | 是 |
+| 可验证 Verifiable | 测试用例、预期输出、Demo 证据、成功标准 | 否 |
+| IO 明确 Clear I/O | 输入输出描述、类型格式、一句话功能说明 | 是 |
+
+评审标准完全由 `references/rubric.json` 驱动，改配置不改代码：
+正向信号（命中数 ≥ `min_hits` 即通过）、负向信号（命中数 ≤ `max_hits`，超出则 veto）、
+条件信号（仅在特定条件满足时生效）、IO 正则配对、`required` 检查项未过则整维判 ❌。
+
+## 可验证性证据
+
+- `benchmark/golden_set/` 内置 12 组标注样本（完美 / 缺文件 / 硬编码路径 / 无 Demo / 弱 IO / 无代码 / 无 AI 日志 / 不可验证 / 优秀 / 最小 / 对抗 / 缺 Skill 文档）
+- `python scripts/benchmark.py --verbose` → 12 样本**完全匹配率 100.0%**，四维度精确率/召回率均 1.000
+- `python scripts/self_test.py` → 99 项断言全部通过
+
+## 环境要求
+
+- Python 3.10+（仅标准库：`pathlib` `re` `json` `argparse` `collections` `datetime`）
+- `openpyxl`（可选；缺失时自动跳过 Excel 生成，其余功能不受影响）
+
+## 源文件清单
+
+```
+SKILL.md                 技能定义（本文件对应内容）
+scripts/main.py          CLI 入口，串联完整评审流程
+scripts/scanner.py       文件扫描、作者识别、分组
+scripts/completeness.py  完整性检查（5 项交付物）
+scripts/evaluator.py     四维度质量评审
+scripts/reporter.py      报告生成（Markdown / Excel / JSON）
+scripts/benchmark.py     黄金集基准测试
+scripts/self_test.py     自测套件
+references/rubric.json   评审标准配置（信号、阈值、权重）
+benchmark/golden_set/    12 组标注样本 + labels.json
+```
+
+## 许可
+
+MIT License
