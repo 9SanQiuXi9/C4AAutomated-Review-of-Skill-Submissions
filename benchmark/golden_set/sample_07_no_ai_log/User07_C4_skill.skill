@@ -1,0 +1,13 @@
+---
+name: email-templater
+description: 生成专业邮件模板
+---
+
+```python
+def generate_email(email_type, key_info):
+    templates = {
+        "follow_up": "Dear {name}, Following up on...",
+        "thank_you": "Dear {name}, Thank you for...",
+    }
+    return templates.get(email_type, "").format(**key_info)
+```

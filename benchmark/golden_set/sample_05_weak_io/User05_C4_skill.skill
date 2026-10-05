@@ -1,0 +1,12 @@
+---
+name: data-processor
+description: 数据处理技能
+---
+
+```python
+import pandas as pd
+
+def process(data):
+    df = pd.DataFrame(data)
+    return df.describe()
+```

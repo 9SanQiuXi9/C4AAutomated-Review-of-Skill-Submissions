@@ -1,0 +1,15 @@
+---
+name: text-stats
+description: 文本文件统计分析
+---
+
+```python
+def text_stats(filepath):
+    with open(filepath, 'r') as f:
+        text = f.read()
+    return {
+        "chars": len(text),
+        "lines": text.count('\n'),
+        "paragraphs": len(text.split('\n\n')),
+    }
+```

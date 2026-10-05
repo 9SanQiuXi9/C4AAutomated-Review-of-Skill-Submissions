@@ -1,0 +1,10 @@
+---
+name: workflow-engine
+description: 高级智能自动化工作流引擎
+---
+
+```python
+# TODO: 实现核心逻辑
+def process(data):
+    pass  # 待实现
+```

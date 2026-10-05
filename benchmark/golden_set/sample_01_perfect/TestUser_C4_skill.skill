@@ -1,0 +1,24 @@
+---
+name: file-organizer
+description: 自动整理文件夹并生成分类报告
+---
+
+# File Organizer
+
+## Steps
+1. 扫描目标文件夹
+2. 按文件类型分类
+3. 生成 Markdown 报告
+
+```python
+import os
+from pathlib import Path
+
+def organize(folder):
+    files = list(Path(folder).rglob("*"))
+    categories = {}
+    for f in files:
+        ext = f.suffix.lower()
+        categories.setdefault(ext, []).append(f.name)
+    return categories
+```

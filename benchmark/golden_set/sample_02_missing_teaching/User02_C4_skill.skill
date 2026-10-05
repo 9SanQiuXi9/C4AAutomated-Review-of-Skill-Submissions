@@ -1,0 +1,14 @@
+---
+name: doc-summarizer
+description: 批量生成文档摘要
+---
+
+```python
+def summarize(folder):
+    from pathlib import Path
+    results = []
+    for f in Path(folder).rglob("*.md"):
+        text = f.read_text()
+        results.append({"file": f.name, "summary": text[:200]})
+    return results
+```

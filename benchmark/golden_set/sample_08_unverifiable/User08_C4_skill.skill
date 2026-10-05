@@ -1,0 +1,12 @@
+---
+name: code-style-checker
+description: Python 代码风格检查
+---
+
+```python
+import subprocess
+
+def check_style(filepath):
+    result = subprocess.run(["pylint", filepath], capture_output=True, text=True)
+    return result.stdout
+```

@@ -1,0 +1,17 @@
+---
+name: csv-analyzer
+description: CSV 数据分析工具
+---
+
+```python
+import csv
+
+def analyze(filepath):
+    with open(filepath) as f:
+        reader = csv.DictReader(f)
+        rows = list(reader)
+    return {
+        "total_rows": len(rows),
+        "columns": list(rows[0].keys()) if rows else [],
+    }
+```

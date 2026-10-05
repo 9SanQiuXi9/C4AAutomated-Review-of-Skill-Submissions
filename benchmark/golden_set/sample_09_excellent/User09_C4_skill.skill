@@ -1,0 +1,38 @@
+---
+name: smart-file-classifier
+description: 基于内容的智能文件分类器
+version: 2.0
+---
+
+# Smart File Classifier
+
+## Workflow
+1. 递归扫描目标文件夹
+2. 提取文件内容特征
+3. 基于规则分类
+4. 生成报告
+
+```python
+import os
+from pathlib import Path
+from collections import defaultdict
+
+def classify_files(folder_path, output_format="markdown"):
+    categories = defaultdict(list)
+    for f in Path(folder_path).rglob("*"):
+        if f.is_file():
+            cat = infer_category(f)
+            categories[cat].append(f)
+    return generate_report(categories, output_format)
+
+def infer_category(filepath):
+    ext = filepath.suffix.lower()
+    name = filepath.stem.lower()
+    if ext in (".pdf", ".docx") and any(k in name for k in ["论文", "paper"]):
+        return "学术论文"
+    if ext in (".py", ".js") and "test" in name:
+        return "测试代码"
+    if ext == ".md" and any(k in name for k in ["readme", "说明"]):
+        return "说明文档"
+    return "其他"
+```

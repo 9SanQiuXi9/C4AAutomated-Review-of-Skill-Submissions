@@ -1,0 +1,146 @@
+{
+  "sample_01_perfect": {
+    "completeness": {
+      "expected_files": 5,
+      "expected_status": "full"
+    },
+    "quality": {
+      "reusable": "pass",
+      "executable": "pass",
+      "verifiable": "pass",
+      "clear_io": "pass"
+    }
+  },
+  "sample_02_missing_teaching": {
+    "completeness": {
+      "expected_files": 4,
+      "expected_status": "partial"
+    },
+    "quality": {
+      "reusable": "pass",
+      "executable": "pass",
+      "verifiable": "pass",
+      "clear_io": "pass"
+    }
+  },
+  "sample_03_hardcoded_paths": {
+    "completeness": {
+      "expected_files": 5,
+      "expected_status": "full"
+    },
+    "quality": {
+      "reusable": "fail",
+      "executable": "pass",
+      "verifiable": "partial",
+      "clear_io": "partial"
+    }
+  },
+  "sample_04_no_demo": {
+    "completeness": {
+      "expected_files": 4,
+      "expected_status": "partial"
+    },
+    "quality": {
+      "reusable": "pass",
+      "executable": "pass",
+      "verifiable": "fail",
+      "clear_io": "pass"
+    }
+  },
+  "sample_05_weak_io": {
+    "completeness": {
+      "expected_files": 5,
+      "expected_status": "full"
+    },
+    "quality": {
+      "reusable": "pass",
+      "executable": "pass",
+      "verifiable": "partial",
+      "clear_io": "partial"
+    }
+  },
+  "sample_06_no_executable": {
+    "completeness": {
+      "expected_files": 4,
+      "expected_status": "partial"
+    },
+    "quality": {
+      "reusable": "pass",
+      "executable": "fail",
+      "verifiable": "pass",
+      "clear_io": "partial"
+    }
+  },
+  "sample_07_no_ai_log": {
+    "completeness": {
+      "expected_files": 4,
+      "expected_status": "partial"
+    },
+    "quality": {
+      "reusable": "pass",
+      "executable": "pass",
+      "verifiable": "pass",
+      "clear_io": "partial"
+    }
+  },
+  "sample_08_unverifiable": {
+    "completeness": {
+      "expected_files": 5,
+      "expected_status": "full"
+    },
+    "quality": {
+      "reusable": "pass",
+      "executable": "pass",
+      "verifiable": "partial",
+      "clear_io": "pass"
+    }
+  },
+  "sample_09_excellent": {
+    "completeness": {
+      "expected_files": 5,
+      "expected_status": "full"
+    },
+    "quality": {
+      "reusable": "pass",
+      "executable": "pass",
+      "verifiable": "pass",
+      "clear_io": "pass"
+    }
+  },
+  "sample_10_minimal": {
+    "completeness": {
+      "expected_files": 5,
+      "expected_status": "full"
+    },
+    "quality": {
+      "reusable": "pass",
+      "executable": "pass",
+      "verifiable": "partial",
+      "clear_io": "pass"
+    }
+  },
+  "sample_11_adversarial": {
+    "completeness": {
+      "expected_files": 5,
+      "expected_status": "full"
+    },
+    "quality": {
+      "reusable": "pass",
+      "executable": "fail",
+      "verifiable": "fail",
+      "clear_io": "partial"
+    }
+  },
+  "sample_12_no_skill_doc": {
+    "completeness": {
+      "expected_files": 4,
+      "expected_status": "partial"
+    },
+    "quality": {
+      "reusable": "partial",
+      "executable": "pass",
+      "verifiable": "partial",
+      "clear_io": "pass"
+    }
+  }
+}

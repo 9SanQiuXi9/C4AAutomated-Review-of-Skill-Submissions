@@ -1,0 +1,270 @@
+# C4A Skill Submission Evaluator — Rubric Configuration
+# All signals, thresholds, and scoring rules are defined here.
+# Zero hardcoding in Python — change this file to adjust evaluation behavior.
+
+version: "1.0"
+
+# ============================================================
+# REQUIRED DELIVERABLES (5 files for C4 completeness)
+# ============================================================
+required_deliverables:
+  skill_doc:
+    label: "Skill 说明文档"
+    required: true
+    detection:
+      filename_patterns:
+        - "skill说明"
+        - "skill_doc"
+        - "skill-doc"
+        - "skill_description"
+        - "skill说明文档"
+      content_signals:
+        - "使用场景"
+        - "解决什么问题"
+        - "use case"
+        - "功能描述"
+        - "技能说明"
+      extensions: [".md", ".pdf", ".docx", ".txt"]
+
+  executable:
+    label: "可执行内容"
+    required: true
+    detection:
+      filename_patterns:
+        - "skill"
+        - "技能"
+      content_signals:
+        - "```"
+        - "def "
+        - "class "
+        - "import "
+        - "---\nname:"
+      extensions: [".skill", ".py", ".md", ".zip", ".js", ".sh"]
+
+  demo:
+    label: "Demo（视频/截图）"
+    required: true
+    detection:
+      filename_patterns:
+        - "demo"
+        - "演示"
+        - "截图"
+        - "screen"
+        - "录屏"
+      extensions: [".mp4", ".mov", ".webm", ".png", ".jpg", ".jpeg", ".gif", ".bmp"]
+
+  teaching_doc:
+    label: "教学说明"
+    required: true
+    detection:
+      filename_patterns:
+        - "教学说明"
+        - "教学"
+        - "tutorial"
+        - "teaching"
+        - "上手指南"
+        - "quickstart"
+        - "how-to"
+        - "使用说明"
+      content_signals:
+        - "上手"
+        - "步骤"
+        - "常见坑"
+        - "安装"
+        - "注意事项"
+        - "getting started"
+        - "step by step"
+        - "使用方法"
+      extensions: [".md", ".pdf", ".docx", ".txt"]
+
+  ai_log:
+    label: "AI 生成日志"
+    required: true
+    detection:
+      filename_patterns:
+        - "AI日志"
+        - "AI_log"
+        - "ai-log"
+        - "ai_日志"
+        - "AI记录"
+      content_signals:
+        - "使用的 AI"
+        - "AI 工具"
+        - "prompt"
+        - "迭代次数"
+        - "迭代"
+        - "ChatGPT"
+        - "Claude"
+        - "DeepSeek"
+        - "AI使用"
+      extensions: [".md", ".pdf", ".docx", ".txt"]
+
+# ============================================================
+# QUALITY CRITERIA (C4 Four Conditions)
+# ============================================================
+quality_criteria:
+  reusable:
+    label: "可复用"
+    label_en: "Reusable"
+    weight: 0.25
+    description: "别人拿过去能直接用，不依赖你的特定环境"
+    fatal: false
+    check_items:
+      - id: has_install
+        label: "有安装说明"
+        positive_signals: ["安装", "install", "pip install", "npm install", "依赖", "requirements", "环境要求", "环境配置", "前置条件", "prerequisites"]
+        min_hits: 1
+      - id: no_hardcoded_paths
+        label: "无硬编码绝对路径"
+        type: negative
+        negative_signals: ["/Users/", "/home/", "C:\\", "D:\\", "/mnt/skills/", "/mnt/user-data/", "我的电脑", "my_computer", "my_secret"]
+        max_hits: 0
+      - id: has_env_requirements
+        label: "环境要求明确"
+        positive_signals: ["环境要求", "requirements", "dependencies", "Python 3", "Node", "node", "运行环境", "系统要求", "版本要求", "python3"]
+        min_hits: 1
+      - id: has_generalization
+        label: "有泛化说明"
+        positive_signals: ["通用", "任意", "任何文件夹", "任何路径", "可配置", "自定义", "适配", "兼容", "compatible", "generalize"]
+        min_hits: 1
+    scoring:
+      pass: 3
+      partial: 1
+      fail: 0
+      pass_threshold: 3
+      partial_threshold: 1
+
+  executable:
+    label: "可执行"
+    label_en: "Executable"
+    weight: 0.25
+    description: "不是理论，是能跑的东西"
+    fatal: true
+    check_items:
+      - id: has_runnable_code
+        label: "包含可运行代码/prompt/workflow"
+        positive_signals: ["```python", "```bash", "```javascript", "```sh", "```yaml", "def ", "class ", "import ", "---\nname:", "workflow", "pipeline", "steps:", "trigger:"]
+        min_hits: 1
+      - id: valid_skill_structure
+        label: ".skill 包结构有效"
+        type: conditional
+        condition: "has_skill_file"
+        positive_signals: ["SKILL.md", "skill.md", "---\nname:", "---\nname :", "scripts/", "references/"]
+        min_hits: 2
+      - id: no_obvious_syntax_errors
+        label: "无明显语法错误"
+        type: negative
+        negative_signals: ["SyntaxError", "IndentationError", "NameError", "unexpected indent", "EOFError"]
+        max_hits: 0
+      - id: has_frontmatter
+        label: "YAML frontmatter 存在（若为 SKILL.md）"
+        type: conditional
+        condition: "has_skill_md"
+        positive_signals: ["---\nname:", "---\ndescription:", "---\nname :", "---\ndescription :"]
+        min_hits: 1
+    scoring:
+      pass: 3
+      partial: 1
+      fail: 0
+      pass_threshold: 2
+      partial_threshold: 1
+
+  verifiable:
+    label: "可验证"
+    label_en: "Verifiable"
+    weight: 0.25
+    description: "有明确的输入输出，能判断成功与否"
+    fatal: false
+    check_items:
+      - id: has_test_or_example
+        label: "有测试用例或示例"
+        positive_signals: ["测试", "test", "example", "示例", "样例", "用例", "验证", "试一下", "试试看"]
+        min_hits: 1
+      - id: has_expected_output
+        label: "定义了预期输出"
+        positive_signals: ["预期", "expected", "应该输出", "应该得到", "结果为", "输出为", "返回", "produces", "generates", "yields"]
+        min_hits: 1
+      - id: has_demo_evidence
+        label: "Demo 展示真实结果"
+        positive_signals: ["demo", "截图", "录屏", "运行结果", "实际效果", "输出截图", "效果展示"]
+        min_hits: 1
+      - id: has_success_criteria
+        label: "成功/失败标准明确"
+        positive_signals: ["成功", "失败", "通过", "不通过", "succeed", "fail", "pass", "正确", "错误", "如果.*则"]
+        min_hits: 1
+    scoring:
+      pass: 3
+      partial: 1
+      fail: 0
+      pass_threshold: 3
+      partial_threshold: 1
+
+  clear_io:
+    label: "IO 明确"
+    label_en: "Clear I/O"
+    weight: 0.25
+    description: "输入什么、输出什么，一目了然"
+    fatal: true
+    check_items:
+      - id: has_io_statement
+        label: "有'输入X，输出Y'描述"
+        positive_signals: ["输入", "输出", "input", "output", "接受", "返回", "给定.*得到"]
+        io_pattern: "输入.*输出|input.*output|接受.*返回|给定.*得到"
+        min_hits: 2
+      - id: has_input_types
+        label: "输入类型/格式明确"
+        positive_signals: ["文件夹路径", "文件路径", "路径", "folder", "path", "目录", ".md", ".pdf", ".txt", "文本", "字符串", "string", "本地"]
+        min_hits: 1
+      - id: has_output_types
+        label: "输出类型/格式明确"
+        positive_signals: ["报告", "report", "markdown", "Excel", ".xlsx", ".md", "表格", "清单", "列表", "JSON", "输出文件", "文档"]
+        min_hits: 1
+      - id: has_oneliner
+        label: "有一句话功能描述"
+        positive_signals: ["功能", "用途", "做什么", "用于", "实现", "purpose", "description", "一个.*工具", "一个.*技能", "自动化"]
+        min_hits: 1
+    scoring:
+      pass: 3
+      partial: 1
+      fail: 0
+      pass_threshold: 3
+      partial_threshold: 1
+
+# ============================================================
+# SCORING FORMULA
+# ============================================================
+scoring:
+  completeness:
+    formula: "files_present / total_required"
+    total_required: 5
+    levels:
+      full: "5/5 — 齐全"
+      partial: "3-4/5 — 部分缺失"
+      insufficient: "<3/5 — 严重缺失"
+
+  quality_per_criterion:
+    levels:
+      pass: "✅ — 满足条件（达到 pass_threshold 个 check_items）"
+      partial: "⚠️ — 部分满足（达到 partial_threshold 但未达 pass_threshold）"
+      fail: "❌ — 不满足（低于 partial_threshold）"
+
+  composite:
+    formula: "completeness_score * 0.4 + quality_score * 0.6"
+    completeness_score: "files_present / 5.0"
+    quality_score: "sum(criterion_scores) / (4.0 * 3.0)"
+    criterion_scores: "each ✅=3, ⚠️=1, ❌=0"
+
+  fatal_veto:
+    description: "Fatal checks veto entire dimension — if any fatal check_item fails, the dimension is capped at ❌ regardless of other checks"
+    veto_criteria: ["executable", "clear_io"]
+
+# ============================================================
+# BENCHMARK CONFIGURATION
+# ============================================================
+benchmark:
+  min_samples: 10
+  target_precision: 0.95
+  target_recall: 0.95
+  target_false_positive_rate: 0.05
+  conservative_rate_threshold: 0.15
+  report_confusion_matrix: true
